@@ -143,8 +143,13 @@ func UpdateOrder(c *fiber.Ctx) error  {
 	var user models.User
 	var product models.Product
 
-	database.DB.Find(&user, "id=?", order.UserRefer)
-	database.DB.Find(&product, "id=?", order.ProductRefer)	
+	if err := FindUser(int(orderData.UserId), &user); err != nil {
+		return c.Status(404).JSON(err.Error())
+	}
+
+	if err := FindProduct(int(orderData.ProdId), &product); err != nil {
+		return c.Status(404).JSON(err.Error())
+	}
 
 	order.User = user
 	order.Product = product
